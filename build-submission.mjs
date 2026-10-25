@@ -34,7 +34,18 @@ const R = (f) => JSON.parse(fs.readFileSync(path.join(HERE, 'runs', f), 'utf8'))
 const LIMIT = 50000;
 
 // The pinned commit in foxxx009/ba-load-profile that holds every file below.
-const COMMIT = process.env.PAYLOAD_COMMIT || 'dacddd4ac84d98665a122635ab1177d077f5b90e';
+// It is passed in rather than hardcoded: this file is itself one of the
+// referenced files, so baking a commit hash into it would make the hash
+// depend on the file that contains it -- change the hash, change the file,
+// change the hash. With the hash as an input, the script's bytes are stable,
+// so one commit of this script is enough.
+//
+//   PAYLOAD_COMMIT=<sha> node build-submission.mjs
+const COMMIT = process.env.PAYLOAD_COMMIT || '';
+if (!/^[0-9a-f]{40}$/.test(COMMIT)) {
+  console.error('PAYLOAD_COMMIT must be set to the 40-hex commit that holds the files');
+  process.exit(2);
+}
 const REPO = 'foxxx009/ba-load-profile';
 // The commit-pinned raw endpoint. api.github.com serves the blob bytes at this
 // path; sha256 of the response equals the sha256 recorded here.
