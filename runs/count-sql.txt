@@ -1,0 +1,30 @@
+# SQL statements prepared per request (measured, not inferred)
+# method: better-sqlite3.prepare patched via sqltrace.mjs preload; delta of the JSONL log across ONE request after warmup
+# target: 127.0.0.1
+
+## list  /v1/tasks?status=open&limit=50  -> 1 statements, http 200, 9786 bytes
+   SELECT t.*, a.name AS creator_name, cl.name AS claimer_name, ow.display_name AS creator_owner_name, EXISTS(SELECT 1 FROM delegations d JOIN owners o ON o.id = d.owner_id AND o.status = 'active' JOIN owner_webauthn_credentials c ON c.owner_id = o.id AND c.status = 'active' WHERE d.agent_id = t.creator_agent_id AND d.status = 'active') AS creator_certified, EXISTS(SELECT 1 FROM owners o JOIN owner_w
+
+## detail  /v1/tasks/task_HD1ITlkwTYRO8igzCiomr  -> 4 statements, http 200, 2119 bytes
+   SELECT t.*, a.name AS creator_name, cl.name AS claimer_name, ow.display_name AS creator_owner_name, EXISTS(SELECT 1 FROM delegations d JOIN owners o ON o.id = d.owner_id AND o.status = 'active' JOIN owner_webauthn_credentials c ON c.owner_id = o.id AND c.status = 'active' WHERE d.agent_id = t.creator_agent_id AND d.status = 'active') AS creator_certified, EXISTS(SELECT 1 FROM owners o JOIN owner_w
+   SELECT submission_id, task_id, agent_id, submission_type, summary, content, created_at, published_at FROM submissions WHERE task_id = ? ORDER BY created_at DESC LIMIT 1
+   SELECT * FROM delivery_receipts WHERE task_id = ? ORDER BY completed_at DESC LIMIT 1
+   SELECT COUNT(*) AS n FROM delivery_receipts WHERE task_id = ?
+
+## settled  /v1/tasks/settled?limit=50  -> 6 statements, http 200, 296 bytes
+   SELECT COUNT(*) as count FROM rate_limit_log WHERE key = ? AND created_at > ?
+   INSERT INTO rate_limit_log (id, key, created_at) VALUES (?, ?, ?)
+   SELECT t.created_at, t.claimed_at, COALESCE((SELECT MIN(r.completed_at) FROM delivery_receipts r WHERE r.task_id = t.task_id), t.submitted_at) AS first_submitted_at, t.verified_at, t.settled_at FROM tasks t WHERE t.payment_status = 'settled' AND t.bounty_network IN ('eip155:8453','eip155:137','eip155:5042') AND t.settled_at IS NOT NULL AND COALESCE(t.escrow_status, '') != 'refunded' AND (length(CO
+   SELECT t.task_id, t.title, t.category, t.bounty_amount, t.bounty_token, t.bounty_network, t.claimed_by_agent_id, cl.name AS claimer_name, t.creator_kind, t.creator_agent_id, t.creator_owner_id, t.created_at, t.claimed_at, COALESCE((SELECT MIN(r.completed_at) FROM delivery_receipts r WHERE r.task_id = t.task_id), t.submitted_at) AS first_submitted_at, t.settled_at, COALESCE(NULLIF(t.escrow_release_
+   SELECT t.task_id FROM tasks t WHERE t.payment_status = 'settled' AND t.bounty_network IN ('eip155:8453','eip155:137','eip155:5042') AND t.settled_at IS NOT NULL AND COALESCE(t.escrow_status, '') != 'refunded' AND NOT COALESCE((length(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash, ''))) = 66 AND substr(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash
+   SELECT COUNT(*) AS n, SUM(CAST(t.bounty_amount AS INTEGER)) AS atomic FROM tasks t WHERE t.payment_status = 'settled' AND t.bounty_network IN ('eip155:8453','eip155:137','eip155:5042') AND t.settled_at IS NOT NULL AND COALESCE(t.escrow_status, '') != 'refunded' AND (length(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash, ''))) = 66 AND substr(COALESCE(NULLIF(t.escrow_releas
+
+## status  /v1/status  -> 7 statements, http 200, 565 bytes
+   SELECT status, COUNT(*) as count FROM agents GROUP BY status
+   SELECT MAX(sequence) as height, entry_hash as last_hash FROM chain ORDER BY sequence DESC LIMIT 1
+   SELECT name, registered_at FROM agents ORDER BY registered_at DESC LIMIT 1
+   SELECT created_at FROM verifications ORDER BY created_at DESC LIMIT 1
+   SELECT COUNT(*) as count FROM verifications
+   SELECT status, COUNT(*) as count FROM tasks GROUP BY status
+   SELECT COUNT(*) AS n, SUM(CAST(t.bounty_amount AS INTEGER)) AS atomic FROM tasks t WHERE t.payment_status = 'settled' AND t.bounty_network IN ('eip155:8453','eip155:137','eip155:5042') AND t.settled_at IS NOT NULL AND COALESCE(t.escrow_status, '') != 'refunded' AND (length(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash, ''))) = 66 AND substr(COALESCE(NULLIF(t.escrow_releas
+

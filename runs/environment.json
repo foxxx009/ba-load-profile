@@ -1,0 +1,13 @@
+{
+ "node": "v22.22.2",
+ "platform": "win32",
+ "arch": "x64",
+ "cpus": 16,
+ "cpu_model": "12th Gen Intel(R) Core(TM) i5-12500H",
+ "total_mem_gb": 15.6,
+ "os_release": "10.0.26200",
+ "sqlite": "better-sqlite3 (synchronous)",
+ "server": "packages/api src/node.ts (Workers entrypoint via app.fetch)",
+ "db": "local seeded registry.db",
+ "date": "2026-10-23T10:19:53.807Z"
+}

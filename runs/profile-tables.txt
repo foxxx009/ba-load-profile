@@ -1,0 +1,71 @@
+# per-endpoint CPU profiles -- complete top-15 self time per endpoint
+# method: node:inspector Profiler on the exported Hono handler (app.fetch) with the SQLiteAdapter the server uses; no socket, no server, no logger middleware in the sampled path; 100us sampling; self time keyed by function+file
+
+## list  /v1/tasks?status=open&limit=50  (n=400, codes={"200":400}, 574.8 ms self, 139 frames)
+   14.39%  all @ :0
+   12.14%  post @ node:inspector:118
+    9.53%  Statement @ :0
+    8.74%  api/src/tasks/service.ts:6
+    7.66%  api/src/db/sqlite-adapter.ts:1
+     6.6%  nm/hono/dist/context.js:375
+    4.26%  (idle) @ :0
+    2.36%  consoleCall @ :0
+    2.34%  (garbage collector) @ :0
+     1.9%  (program) @ :0
+    1.44%  writeBuffer @ :0
+    0.79%  (anonymous) @ :0
+     0.7%  nm/hono/dist/middleware/etag/digest.js:14
+    0.68%  api/src/tasks/service.ts:6
+    0.68%  encode @ node:internal/encoding:351
+
+## detail  /v1/tasks/task_HD1ITlkwTYRO8igzCiomr  (n=800, codes={"200":800}, 706 ms self, 154 frames)
+    18.6%  Statement @ :0
+    9.95%  (idle) @ :0
+    7.24%  post @ node:inspector:118
+    6.19%  get @ :0
+       4%  api/src/tasks/service.ts:6
+    3.56%  nm/hono/dist/context.js:375
+     3.5%  consoleCall @ :0
+    3.05%  api/src/db/sqlite-adapter.ts:1
+    3.04%  (program) @ :0
+    3.03%  (garbage collector) @ :0
+    2.54%  nm/hono/dist/middleware/etag/digest.js:14
+    2.28%  writeBuffer @ :0
+    1.08%  api/src/tasks/service.ts:6
+    0.96%  (anonymous) @ node:internal/deps/undici/undici:3969
+    0.81%  _Response @ node:internal/deps/undici/undici:9335
+
+## settled  /v1/tasks/settled?limit=50  (n=800, codes={"200":800}, 1722.6 ms self, 179 frames)
+   22.26%  Statement @ :0
+   12.29%  run @ :0
+   10.57%  all @ :0
+    6.59%  (idle) @ :0
+    3.59%  post @ node:inspector:118
+    3.45%  consoleCall @ :0
+    2.37%  (program) @ :0
+    2.04%  get @ :0
+    1.98%  (garbage collector) @ :0
+    1.88%  writeBuffer @ :0
+    1.42%  prepare @ :0
+    1.38%  api/src/lib/rate-limiter.ts:1
+    1.29%  nm/hono/dist/middleware/etag/digest.js:14
+    1.16%  api/src/routes/tasks.ts:4
+    0.82%  pullWithDefaultReader @ node:internal/webstreams/readablestream:1735
+
+## status  /v1/status  (n=800, codes={"200":800}, 1698.2 ms self, 175 frames)
+   18.05%  Statement @ :0
+   12.05%  post @ node:inspector:118
+   10.87%  get @ :0
+    8.34%  (idle) @ :0
+    4.33%  all @ :0
+    3.25%  (program) @ :0
+    3.17%  consoleCall @ :0
+    2.77%  api/src/index.ts:1
+    2.22%  run @ :0
+    2.01%  (garbage collector) @ :0
+    1.62%  writeBuffer @ :0
+    1.39%  prepare @ :0
+    1.21%  pullWithDefaultReader @ node:internal/webstreams/readablestream:1735
+       1%  api/src/db/sqlite-adapter.ts:1
+    0.78%  nm/hono/dist/context.js:375
+

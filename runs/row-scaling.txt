@@ -1,0 +1,15 @@
+# per-row scaling of GET /v1/tasks?status=all&limit=N  (LOCALHOST, 60 reps, 20 warmup each)
+limit=  1 rows=  1 bytes=  1963 p50_ms=4.377
+limit=  5 rows=  5 bytes=  9731 p50_ms=5.658
+limit= 10 rows= 10 bytes= 19441 p50_ms=5.976
+limit= 25 rows= 25 bytes= 48586 p50_ms=9.155
+limit= 50 rows= 50 bytes= 97181 p50_ms=15.593
+limit=100 rows=100 bytes=194750 p50_ms=21.242
+
+least squares vs rows_returned:
+  p50_ms  = 4.7779 + 0.17452 * rows
+  bytes   = -42.7983 + 1947.16644 * rows
+interpretation: the intercept is the fixed per-request cost (query + routing);
+the slope is the per-row cost (row shaping in publicTaskShape + JSON serialization).
+statements per request are exactly 1 at every limit (see runs/count-sql.json),
+so this slope is NOT an N+1 in SQL -- it is per-row work after one query.

@@ -1,0 +1,19 @@
+# mixed write scenario (LOCALHOST)
+
+## post_task_invalid  POST /v1/tasks
+conc=  1 rps=  58.57 p50=  14.98 p95=  34.65 p99=  34.65 codes={"400":10}
+conc=  5 rps=  85.69 p50=  57.85 p95=  61.76 p99=  62.14 codes={"400":50}
+conc= 10 rps=  86.16 p50= 111.18 p95= 133.05 p99= 135.99 codes={"400":100}
+conc= 20 rps=   81.4 p50= 236.37 p95= 306.62 p99= 314.22 codes={"400":200}
+
+## claim_already_claimed  POST /v1/tasks/task_HD1ITlkwTYRO8igzCiomr/claim
+conc=  1 rps=  68.04 p50=  13.23 p95=  28.32 p99=  28.32 codes={"200":1,"409":9}
+conc=  5 rps=  79.39 p50=  60.99 p95=  81.21 p99=  82.67 codes={"409":50}
+conc= 10 rps=  73.34 p50=  129.1 p95= 200.13 p99= 200.81 codes={"409":100}
+conc= 20 rps=   82.2 p50= 240.46 p95= 271.91 p99=  274.6 codes={"409":200}
+
+## deliver_not_claimed  POST /v1/tasks/task_HD1ITlkwTYRO8igzCiomr/deliver
+conc=  1 rps=  72.36 p50=  14.22 p95=  15.77 p99=  15.77 codes={"400":10}
+conc=  5 rps=  83.74 p50=  58.88 p95=  66.62 p99=  68.07 codes={"400":50}
+conc= 10 rps=  79.94 p50= 124.42 p95= 134.19 p99= 134.98 codes={"400":100}
+conc= 20 rps=  86.47 p50= 216.31 p95= 278.39 p99= 282.38 codes={"400":200}
