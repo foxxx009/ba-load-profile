@@ -130,7 +130,10 @@ if (fs.existsSync(payloadPath)) {
   const inner = JSON.parse(payload.submission_content);
   let trunc = 0;
   for (const [name, f] of Object.entries(inner.files || {})) {
-    if (/\[truncated/.test(f.content || '')) { trunc++; console.log(`       truncated: ${name}`); }
+    // The builder's real marker is "[truncated N chars; ...]"; matching only
+    // that (not the bare word) keeps this detector from flagging its own
+    // source line, which is what a looser pattern used to do.
+    if (/\[truncated \d+ chars/.test(f.content || '')) { trunc++; console.log(`       truncated: ${name}`); }
   }
   ok(trunc === 0, 'no file content is truncated', `${trunc} truncated`);
   for (const [name, f] of Object.entries(inner.files || {})) {
